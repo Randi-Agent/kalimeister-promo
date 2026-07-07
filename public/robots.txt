@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kalimeister.com/sitemap.xml
