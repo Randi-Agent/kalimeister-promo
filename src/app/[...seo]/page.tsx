@@ -3,15 +3,27 @@ import { SERVICES, CITIES } from "@/lib/pseo-data";
 
 interface Props {
   params: {
-    serviceSlug: string;
-    citySlug: string;
+    seo: string[];
   };
 }
 
 export default function SEOPage({ params }: Props) {
-  const { serviceSlug, citySlug } = params;
+  // Get the slug from the first (and only) element of the seo array
+  const slug = params.seo[0];
 
-  // Find service and city data with proper type checking
+  // Split the slug to get service and city
+  const [serviceSlug, citySlug] = splitSlug(slug);
+
+  // If we couldn't split properly, show 404
+  if (!serviceSlug || !citySlug) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <p className="text-red-400 text-center">Page not found</p>
+      </div>
+    );
+  }
+
+  // Find service and city data
   const serviceData = SERVICES[serviceSlug as keyof typeof SERVICES];
   const cityData = CITIES.find(city => city.slug === citySlug);
 
@@ -25,7 +37,7 @@ export default function SEOPage({ params }: Props) {
   }
 
   const { label: serviceLabel, description: serviceDescription } = serviceData;
-  const { city, state, neighborhoods } = cityData;
+  const { city: cityName, state, neighborhoods } = cityData;
 
   return (
     <main>
@@ -61,10 +73,10 @@ export default function SEOPage({ params }: Props) {
 
       <section className="max-w-5xl mx-auto px-4 py-20">
         <h2 className="text-3xl font-bold text-center text-white mb-4">
-          {serviceLabel} in {city}, {state}
+          {serviceLabel} in {cityName}, {state}
         </h2>
         <p className="text-center text-purple-300 max-w-2xl mx-auto mb-12">
-          Expert {serviceLabel.toLowerCase()} services tailored for the {city} community.
+          Expert {serviceLabel.toLowerCase()} services tailored for the {cityName} community.
           Our experienced practitioners provide insightful readings that resonate with your
           unique situation and location-specific energy.
         </p>
@@ -72,18 +84,24 @@ export default function SEOPage({ params }: Props) {
           {[
             {
               title: "Local Expertise",
-              desc: `Deep understanding of ${city}'s unique energy and spiritual landscape`,
+              desc: `Deep understanding of ${cityName}'s unique energy and spiritual landscape`,
             },
             {
               title: "Community Trusted",
-              desc: `Served clients throughout ${neighborhoods.split(',').slice(0, 3).join(', ')} and surrounding areas`,
+              desc: `Served clients throughout ${neighborhoods
+                .split(",")
+                .slice(0, 3)
+                .join(", ")} and surrounding areas`,
             },
             {
               title: "Convenient Access",
-              desc: "Available for in-person sessions in {city} or virtual consultations worldwide",
+              desc: "Available for in-person sessions in {cityName} or virtual consultations worldwide",
             },
           ].map((item) => (
-            <div key={item.title} className="border border-purple-800/50 rounded-xl p-6 bg-purple-900/10 hover:border-[#d4a843]/50 transition-colors">
+            <div
+              key={item.title}
+              className="border border-purple-800/50 rounded-xl p-6 bg-purple-900/10 hover:border-[#d4a843]/50 transition-colors"
+            >
               <h3 className="text-[#d4a843] text-xl font-semibold mb-3">{item.title}</h3>
               <p className="text-purple-300">{item.desc}</p>
             </div>
@@ -95,9 +113,9 @@ export default function SEOPage({ params }: Props) {
         <blockquote className="max-w-2xl mx-auto">
           <p className="text-xl md:text-2xl text-purple-200 italic leading-relaxed mb-6">
             &ldquo;Kali's {serviceLabel.toLowerCase()} reading gave me clarity I've been seeking for months.
-            Her connection to the {city} community makes her insights feel personal and relevant.&rdquo;
+            Her connection to the {cityName} community makes her insights feel personal and relevant.&rdquo;
           </p>
-          <cite className="text-[#d4a843] not-italic font-medium">&mdash; {city} Resident</cite>
+          <cite className="text-[#d4a843] not-italic font-medium">&mdash; {cityName} Resident</cite>
         </blockquote>
       </section>
 
@@ -119,15 +137,37 @@ export default function SEOPage({ params }: Props) {
   );
 }
 
+// Helper function to split a slug into service and city parts
+// We assume the format is "service-slug-city-slug" where both parts are kebab-case
+function splitSlug(slug: string): [string | null, string | null] {
+  // We need to find the split point. Since both service and city slugs can contain hyphens,
+  // we need to try matching against our known services and cities.
+  
+  // Try to match from the beginning with known service slugs
+  for (const serviceSlug in SERVICES) {
+    if (slug.startsWith(serviceSlug + "-")) {
+      const citySlug = slug.substring(serviceSlug.length + 1); // +1 for the hyphen
+      // Check if this citySlug exists in our cities
+      if (CITIES.some(city => city.slug === citySlug)) {
+        return [serviceSlug, citySlug];
+      }
+    }
+  }
+  
+  // If we couldn't find a valid split, return nulls
+  return [null, null];
+}
+
 // Generate static parameters for all service-city combinations
 export async function generateStaticParams() {
   const routes = [];
 
   for (const [serviceSlug, serviceData] of Object.entries(SERVICES)) {
     for (const city of CITIES) {
+      // Create a single slug combining service and city with hyphen
+      const slug = `${serviceSlug}-${city.slug}`;
       routes.push({
-        serviceSlug,
-        citySlug: city.slug,
+        seo: [slug], // Pass as array to match the params.seo structure
       });
     }
   }
