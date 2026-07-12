@@ -3,30 +3,18 @@ import { SERVICES, CITIES } from "@/lib/pseo-data";
 
 interface Props {
   params: {
-    seo: string[] | undefined;
+    seo: string[];
   };
 }
 
 export default function SEOPage({ params }: Props) {
-  // Handle undefined params.seo
-  if (!params?.seo) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-red-400 text-center">Page not found</p>
-      </div>
-    );
-  }
-
-  // Join the seo array segments to get the full slug
-  // For /tarot-readings-chattanooga-tn, params.seo = ["tarot-readings-chattanooga-tn"]
-  // For /nested/path/here, params.seo = ["nested", "path", "here"]
-  const slugSegments = params.seo;
-  const slug = slugSegments.join("-");
+  // Get the slug from the first (and only) element of the seo array
+  const slug = params.seo[0];
 
   // Split the slug to get service and city
-  const [serviceSlug, citySlug] = slug.split("-");
+  const [serviceSlug, citySlug] = splitSlug(slug);
 
-  // If we couldn't split into exactly two parts, show 404
+  // If we couldn't split properly, show 404
   if (!serviceSlug || !citySlug) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
@@ -149,6 +137,27 @@ export default function SEOPage({ params }: Props) {
   );
 }
 
+// Helper function to split a slug into service and city parts
+// We assume the format is "service-slug-city-slug" where both parts are kebab-case
+function splitSlug(slug: string): [string | null, string | null] {
+  // We need to find the split point. Since both service and city slugs can contain hyphens,
+  // we need to try matching against our known services and cities.
+  
+  // Try to match from the beginning with known service slugs
+  for (const serviceSlug in SERVICES) {
+    if (slug.startsWith(serviceSlug + "-")) {
+      const citySlug = slug.substring(serviceSlug.length + 1); // +1 for the hyphen
+      // Check if this citySlug exists in our cities
+      if (CITIES.some(city => city.slug === citySlug)) {
+        return [serviceSlug, citySlug];
+      }
+    }
+  }
+  
+  // If we couldn't find a valid split, return nulls
+  return [null, null];
+}
+
 // Generate static parameters for all service-city combinations
 export async function generateStaticParams() {
   const routes = [];
@@ -157,10 +166,8 @@ export async function generateStaticParams() {
     for (const city of CITIES) {
       // Create a single slug combining service and city with hyphen
       const slug = `${serviceSlug}-${city.slug}`;
-      // For the [...seo] route, we need to pass this as a single-element array
-      // where the element is the full slug (which will be split by the component)
       routes.push({
-        seo: [slug],
+        seo: [slug], // Pass as array to match the params.seo structure
       });
     }
   }
