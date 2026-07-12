@@ -3,13 +3,13 @@ import { SERVICES, CITIES } from "@/lib/pseo-data";
 
 interface Props {
   params: {
-    seo: string[] | undefined;
+    seo: string | undefined;
   };
 }
 
 export default function SEOPage({ params }: Props) {
-  // Handle undefined params.seo
-  if (!params?.seo) {
+  const slug = params.seo;
+  if (!slug) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <p className="text-red-400 text-center">Page not found</p>
@@ -17,40 +17,26 @@ export default function SEOPage({ params }: Props) {
     );
   }
 
-  const segs = params.seo;
+  // Try to match the slug against service-city combinations
+  let serviceData: typeof SERVICES[keyof typeof SERVICES] | null = null;
+  let serviceSlug: string = '';
+  let citySlug: string = '';
+  let cityData: (typeof CITIES)[number] | undefined;
 
-  // Try to find a service that matches the beginning of the path
-  let serviceData = null;
-  let serviceSlug = "";
-  let citySlug = "";
-
-  for (const [slug, data] of Object.entries(SERVICES)) {
-    const serviceSegments = slug.split("-");
-    if (segs.length >= serviceSegments.length) {
-      const matches = serviceSegments.every(
-        (seg, i) => seg === segs[i]
-      );
-      if (matches) {
-        serviceData = data;
-        serviceSlug = slug;
-        // The remaining segments form the city slug
-        citySlug = segs.slice(serviceSegments.length).join("-");
+  for (const [sSlug, sData] of Object.entries(SERVICES)) {
+    if (slug.startsWith(sSlug + '-')) {
+      serviceData = sData;
+      serviceSlug = sSlug;
+      const remaining = slug.substring(sSlug.length + 1); // +1 for the '-'
+      cityData = CITIES.find(city => city.slug === remaining);
+      if (cityData) {
+        citySlug = remaining;
         break;
       }
     }
   }
 
-  if (!serviceData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-red-400 text-center">Page not found</p>
-      </div>
-    );
-  }
-
-  // Find city data by matching the citySlug
-  const cityData = CITIES.find(city => city.slug === citySlug);
-  if (!cityData) {
+  if (!serviceData || !cityData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <p className="text-red-400 text-center">Page not found</p>
@@ -165,12 +151,11 @@ export async function generateStaticParams() {
 
   for (const [serviceSlug, serviceData] of Object.entries(SERVICES)) {
     for (const city of CITIES) {
-      // Create a path by combining serviceSlug and city.slug with a hyphen
+      // Create a single slug combining service and city with hyphen
       const slug = `${serviceSlug}-${city.slug}`;
-      // For the [seo] route, we need to split this slug into segments
-      const segments = slug.split("-");
+      // For the [seo] route, we need to pass this as a string (not array)
       routes.push({
-        seo: segments,
+        seo: slug,
       });
     }
   }
