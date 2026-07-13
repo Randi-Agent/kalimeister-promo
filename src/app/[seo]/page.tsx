@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { SERVICES, CITIES } from "@/lib/pseo-data";
 
 interface Props {
@@ -10,21 +11,17 @@ interface Props {
 export default function SEOPage({ params }: Props) {
   const slug = params.seo;
   if (!slug) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-red-400 text-center">Page not found</p>
-      </div>
-    );
+    notFound();
   }
 
   // Try to match the slug against service-city combinations
   let serviceData: typeof SERVICES[keyof typeof SERVICES] | null = null;
-  let serviceSlug: string = '';
-  let citySlug: string = '';
+  let serviceSlug: string = "";
+  let citySlug: string = "";
   let cityData: (typeof CITIES)[number] | undefined;
 
   for (const [sSlug, sData] of Object.entries(SERVICES)) {
-    if (slug.startsWith(sSlug + '-')) {
+    if (slug.startsWith(sSlug + "-")) {
       serviceData = sData;
       serviceSlug = sSlug;
       const remaining = slug.substring(sSlug.length + 1); // +1 for the '-'
@@ -37,11 +34,7 @@ export default function SEOPage({ params }: Props) {
   }
 
   if (!serviceData || !cityData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <p className="text-red-400 text-center">Page not found</p>
-      </div>
-    );
+    notFound();
   }
 
   const { label: serviceLabel, description: serviceDescription } = serviceData;
