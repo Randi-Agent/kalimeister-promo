@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { SERVICES, CITIES } from "@/lib/pseo-data";
 
-export const dynamic = "force-static";
-export const dynamicParams = false;
+// Use ISR: serve cached pages, revalidate periodically
+export const revalidate = 86400; // 24 hours
+export const dynamicParams = true; // allow on-demand generation
 
 interface Props {
   params: {

@@ -1,7 +1,15 @@
 {
+  "hosting": {
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "nextjs"
+      }
+    ]
+  },
   "apphosting": [
     {
-      "backendId": "kalimeister-promo",
+      "backendId": "kalimeister-promo-1",
       "rootDir": ".",
       "appId": "1:53062870371:web:6f844357bcad7c6287df56"
     }
