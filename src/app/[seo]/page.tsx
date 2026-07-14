@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SERVICES, CITIES } from "@/lib/pseo-data";
 
@@ -56,18 +55,18 @@ export default function SEOPage({ params }: Props) {
             that illuminate your path forward.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/readings"
+            <a
+              href="https://kalimeister.com/readings"
               className="bg-[#d4a843] text-[#0f0a1a] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#f0d870] transition-colors"
             >
               Explore Readings
-            </Link>
-            <Link
-              href="/about"
+            </a>
+            <a
+              href="https://kalimeister.com/#about"
               className="border border-[#d4a843] text-[#d4a843] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#d4a843]/10 transition-colors"
             >
               About Kali
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -127,12 +126,14 @@ export default function SEOPage({ params }: Props) {
         <p className="text-purple-300 mb-8">
           Book a {serviceLabel.toLowerCase()} session and gain the clarity you deserve.
         </p>
-        <Link
-          href="/readings"
+        <a
+          href="https://kalimeister.com/readings"
+          target="_blank"
+          rel="noopener noreferrer"
           className="inline-block bg-[#d4a843] text-[#0f0a1a] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#f0d870] transition-colors"
         >
           Book Your Session
-        </Link>
+        </a>
       </section>
     </main>
   );

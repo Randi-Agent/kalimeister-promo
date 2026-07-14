@@ -1,5 +1,3 @@
-import Link from "next/link"
-
 export function Footer() {
   return (
     <footer className="border-t border-purple-900/50 mt-auto bg-[#070510]">
@@ -11,9 +9,9 @@ export function Footer() {
             <p className="text-purple-400 text-xs mt-2">Chattanooga, TN &bull; Virtual Worldwide</p>
           </div>
           <div className="flex gap-6 text-sm text-purple-400">
-            <Link href="/readings" className="hover:text-[#d4a843]">Readings</Link>
-            <Link href="/about" className="hover:text-[#d4a843]">About</Link>
-            <a href="#book" className="hover:text-[#d4a843]">Book</a>
+            <a href="https://kalimeister.com/readings" className="hover:text-[#d4a843]">Readings</a>
+            <a href="https://kalimeister.com/courses" className="hover:text-[#d4a843]">Courses</a>
+            <a href="https://kalimeister.com/contact" className="hover:text-[#d4a843]">Contact</a>
           </div>
         </div>
         <div className="border-t border-purple-900/30 mt-6 pt-6 text-center text-xs text-purple-500">

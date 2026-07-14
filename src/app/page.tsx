@@ -1,5 +1,3 @@
-import Link from "next/link"
-
 export default function HomePage() {
   return (
     <main>
@@ -17,18 +15,18 @@ export default function HomePage() {
             that illuminate your path forward.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/readings"
+            <a
+              href="https://kalimeister.com/readings"
               className="bg-[#d4a843] text-[#0f0a1a] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#f0d870] transition-colors"
             >
               Explore Readings
-            </Link>
-            <Link
-              href="/about"
+            </a>
+            <a
+              href="https://kalimeister.com/#about"
               className="border border-[#d4a843] text-[#d4a843] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#d4a843]/10 transition-colors"
             >
               About Kali
-            </Link>
+            </a>
           </div>
         </div>
       </section>
@@ -68,12 +66,12 @@ export default function HomePage() {
         <p className="text-purple-300 mb-8">
           Book a private session with Kali. Available in-person in Chattanooga or virtually worldwide.
         </p>
-        <Link
-          href="/readings"
+        <a
+          href="https://kalimeister.com/readings"
           className="inline-block bg-[#d4a843] text-[#0f0a1a] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#f0d870] transition-colors"
         >
           Book a Reading
-        </Link>
+        </a>
       </section>
     </main>
   )

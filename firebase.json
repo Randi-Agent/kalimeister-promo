@@ -1,0 +1,9 @@
+{
+  "apphosting": [
+    {
+      "backendId": "kalimeister-promo",
+      "rootDir": ".",
+      "appId": "1:53062870371:web:6f844357bcad7c6287df56"
+    }
+  ]
+}
