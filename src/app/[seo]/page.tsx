@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 import { SERVICES, CITIES } from "@/lib/pseo-data";
 
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
 interface Props {
   params: {
     seo: string | undefined;
